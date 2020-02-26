@@ -14,3 +14,14 @@
   the new plugins.
 
 - Relaunch phy
+
+
+### Notes
+- You should remove duplicate plugins in the ~/.phy/plugins folder, otherwise the
+  loading might go wrong.
+- Some plugins might require additional packages to be installed, check the import
+  statements if you're unable to run a plugin.
+- To get more verbose output, phy can be ran with the debug option.
+  ```python
+  phy template-gui --debug params.py
+  ```
