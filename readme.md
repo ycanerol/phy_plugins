@@ -22,6 +22,6 @@
 - Some plugins might require additional packages to be installed, check the import
   statements if you're unable to run a plugin.
 - To get more verbose output, phy can be ran with the debug option.
-  ```python
+  ```bash
   phy template-gui --debug params.py
   ```
