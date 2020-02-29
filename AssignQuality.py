@@ -1,4 +1,14 @@
-"""Show how to write a custom split action."""
+"""
+Quick assign quality to selected clusters
+
+There are 4 quality levels (1 to 4). The assignment triggers two
+actions: the column 'quality' is set to the requested level and the
+clusters are assigned to the group 'good'. This means that reverting the
+assignment requires two 'undo' steps in action history.
+
+Removing the assignment both removes the quality label and the group
+assignment (two actions).
+"""
 
 from phy import IPlugin, connect
 import logging
@@ -7,22 +17,23 @@ logger = logging.getLogger('phy')
 
 
 class AssignQuality(IPlugin):
-    def assignQuality(self, controller, quality=0):
-        # Assign the label to all selected clusters
+    def assignQuality(self, controller, quality=None):
+        """Assign the label to all selected clusters"""
         controller.supervisor.label('quality',
-                                    str(quality) if quality else '')
+                                    str(quality) if quality else None)
+        selection = controller.supervisor.selected
         if quality:
             controller.supervisor.label('group', 'good')
-            logger.info('Assign quality of %i', quality)
+            logger.info('Assign quality of %i to clusters %s.', quality,
+                        ', '.join(map(str, selection)))
         else:
-            controller.supervisor.label('group', 'noise')
-            logger.info('Removed quality assignment')
+            controller.supervisor.label('group', None)
+            logger.info('Remove quality assignment from clusters %s.',
+                        ', '.join(map(str, selection)))
 
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
-            """Quick assign selected clusters to a quality or to noise"""
-
             @controller.supervisor.actions.add(shortcut='alt+1')
             def Assign_quality_1():
                 self.assignQuality(controller, 1)
@@ -40,5 +51,5 @@ class AssignQuality(IPlugin):
                 self.assignQuality(controller, 4)
 
             @controller.supervisor.actions.add(shortcut='alt+5')
-            def Put_to_noise():
+            def Remove_quality_assigment():
                 self.assignQuality(controller, 0)
