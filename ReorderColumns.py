@@ -1,4 +1,22 @@
-"""Reorder columns in ClusterView and SimilarityView,"""
+"""
+Reorder columns in ClusterView and SimilarityView
+
+Specified columns are moved to the right hand side of the cluster view
+and similarity view. This also allows to rearrange the order completely
+by specifying all column names in `last_columns` below.
+
+The similarity column in the similarity view is added to the table last
+(far right), such that there is an additional function below to reset
+the table with the desired column order instead.
+
+If present, the column named 'quality' will be squeezed to minimum width
+to preserve some space.
+
+Additionally, the text in the columns can be left, right or center
+aligned (default here is 'right'). To use up less space the table can
+be set to `tight_columns` where the column headers no longer explode the
+column widths unnecessarily (False by default).
+"""
 
 from phy import IPlugin, connect
 from phy.cluster.supervisor import ClusterView
