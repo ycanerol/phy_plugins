@@ -2,7 +2,7 @@
 Additional selection options
 
 Select the cluster with the highest id (among non-noise clusters). This
-is useful after performing an action and loosing track of the recently
+is useful after performing an action and losing track of the recently
 created cluster.
 
 Select all yet unsorted clusters within the current channel. This is
@@ -56,7 +56,7 @@ class SelectionOptions(IPlugin):
                 channel = set(sup.get_cluster_info(c)['ch']
                               for c in sup.selected_clusters)
                 if len(channel) != 1:
-                    logger.warn("Error: Selection exeeds one channel")
+                    logger.warn("Error: Selection exceeds one channel")
                     return
                 channel = channel.pop()
 
