@@ -106,7 +106,10 @@ class ReorderColumns(IPlugin):
         @connect
         def on_controller_ready(sender):
             for col in self.last_columns:
-                controller.supervisor.columns.remove(col)
+                if col not in controller.supervisor.columns:
+                    logger.debug("Add column %s.", col)
+                else:
+                    controller.supervisor.columns.remove(col)
                 controller.supervisor.columns.append(col)
 
         @connect
