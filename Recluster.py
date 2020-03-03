@@ -1,3 +1,6 @@
+"""
+Copied and modified from https://github.com/petersenpeter/phy2-plugins/
+"""
 from phy import IPlugin, connect
 
 import logging
