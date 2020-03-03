@@ -9,6 +9,7 @@ Select all yet unsorted clusters within the current channel. This is
 useful to quickly see all clusters side-by-side.
 """
 
+import numpy as np
 from phy import IPlugin, connect
 import logging
 
@@ -29,6 +30,8 @@ class SelectionOptions(IPlugin):
                 # Find the highest non-noise cluster
                 groups = sup.get_labels('group')
                 ids = sup.clustering.cluster_ids
+                if isinstance(ids, np.ndarray):
+                    ids = ids.tolist()
                 highest = max(ids)
                 while len(ids) > 0 and groups[highest] == 'noise':
                     ids.remove(highest)
