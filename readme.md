@@ -25,3 +25,8 @@
   ```bash
   phy template-gui --debug params.py
   ```
+
+
+## References
+
+`Recluster` and `SplitShortISI` were modified and copied from https://doi.org/10.5281/zenodo.3367782.
