@@ -83,6 +83,9 @@ class WriteComments(IPlugin):
     def load_comments(self, controller):
         """Load selected comments a list of as sets"""
         cluster_ids = controller.supervisor.selected
+        if 'comment' not in controller.supervisor.fields:
+            logger.debug('Comment field does not exist. Return empty list.')
+            return []
         allcmt = controller.supervisor.get_labels('comment')
 
         # Find shared comments (ignoring empty comments)
@@ -103,7 +106,9 @@ class WriteComments(IPlugin):
     def attach_to_controller(self, controller):
         def get_comments():
             """Fetch common comments among selected clusters"""
+            logger.debug('Retrieving comments from selected clusters.')
             comments = self.load_comments(controller)
+            logger.debug('Splitting comments.')
             chars, comments = self.split_comments(comments)
 
             # Keep non-empty comments only
@@ -116,12 +121,17 @@ class WriteComments(IPlugin):
             if len(comments) > 0:
                 comments = list(comments[0].intersection(*comments))
 
+            logger.debug('Number of comments found: %i, %i (chars, comments).',
+                         len(chars), len(comments))
+
             # Collapse characters without delimiter
             chars = ''.join(self.pairs_inv[c] for c in chars)
             chars = [chars] if chars else []
 
             # Join the comments back together
-            return self.delimiter.join(chars + comments)
+            ret = self.delimiter.join(chars + comments)
+            logger.debug('Created prompt default as \'%s\'.', ret)
+            return ret
 
         @connect
         def on_gui_ready(sender, gui):
@@ -134,6 +144,7 @@ class WriteComments(IPlugin):
                 remove comments, prepend with '!' to replace completely,
                 type '!' to clear all
                 """
+                logger.debug('Non-empty user input received.')
                 cluster_ids = controller.supervisor.selected
 
                 # Check if replacement if requested
