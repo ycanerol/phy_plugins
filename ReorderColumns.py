@@ -108,6 +108,7 @@ class ReorderColumns(IPlugin):
             for col in self.last_columns:
                 if col not in controller.supervisor.columns:
                     logger.debug("Add column %s.", col)
+                    controller.supervisor.cluster_meta.add_field(col)
                 else:
                     controller.supervisor.columns.remove(col)
                 controller.supervisor.columns.append(col)
