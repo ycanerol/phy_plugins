@@ -31,6 +31,15 @@ Select all unsorted clusters in current channel
 
 Select all yet unsorted clusters within the current channel. This is
 useful to quickly see all clusters side-by-side.
+
+
+Select all similar clusters of certain similarity
+-------------------------------------------------
+
+Select all non-noise clusters down to a desired similarity threshold or
+within a certain range of similarity, depending on whether one or two
+arguments are specified. This is useful to see candidates for merging
+at a glance.
 """
 
 import numpy as np
@@ -108,7 +117,7 @@ class SelectionOptions(IPlugin):
                 channel = set(sup.get_cluster_info(c)['ch']
                               for c in sup.selected_clusters)
                 if len(channel) != 1:
-                    logger.warn("Error: Selection exceeds one channel")
+                    logger.warn('Error: Selection exceeds one channel')
                     return
                 channel = channel.pop()
 
@@ -118,7 +127,7 @@ class SelectionOptions(IPlugin):
                        c['group'] not in ('noise', 'good')]
 
                 if len(sel) < 1:
-                    logger.info("Channel %s fully sorted.", channel)
+                    logger.info('Channel %s fully sorted.', channel)
                     return
 
                 logger.info('Change selection from %s to channel %s (%s).',
@@ -126,3 +135,58 @@ class SelectionOptions(IPlugin):
                             ', '.join(map(str, sel)))
 
                 sup.select(sel)
+
+            @controller.supervisor.actions.add(shortcut='ctrl+shift+j',
+                                               name='Select similar clusters',
+                                               alias='selsim',
+                                               menu='Sele&ct',
+                                               prompt=True,
+                                               prompt_default=lambda: 0.8)
+            def Selected_similar_clusters(low, high=1.01):
+                """
+                Select all similar clusters down to a certain
+                similarity (one argument) or within a range (two
+                arguments)
+                """
+                sup = controller.supervisor
+
+                # Safety check in case there was no prior selection
+                if not sup.selected_clusters:
+                    return
+
+                # Only consider one selected cluster
+                cid = sup.selected_clusters[0]
+
+                # Verify user input
+                if hasattr(low, '__len__') and len(low) == 2:
+                    low, high = low
+
+                if not isinstance(low, float) or not isinstance(high, float):
+                    logger.warn('Error: Invalid input. One or two floats '
+                                'expected')
+
+                # Resort the ranges
+                low, high = min(low, high), max(low, high)
+
+                # Verify ranges
+                if not (0 <= low <= 1) or high < 0:
+                    logger.warn('Error: Invalid input. Values expected '
+                                'between [0, 1].')
+                    return
+
+                # Obtain all similar clusters
+                sel = [s['id'] for s in sup._get_similar_clusters(None, cid)
+                       if low <= float(s['similarity']) < high
+                       and s['group'] != 'noise']
+
+                if len(sel) < 1:
+                    logger.info('No similar clusters found.')
+                    return
+
+                logger.info('For cluster %i select all similar, non-noise '
+                            'clusters between %g and %g: %s.', cid, low,
+                            min(high, 1), ', '.join(map(str, [cid] + sel)))
+
+                # Let the TaskLogger take care of making the selections
+                sup.task_logger._select_state(([cid], None, sel, None))
+                sup.task_logger.process()
