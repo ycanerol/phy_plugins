@@ -19,15 +19,31 @@ logger = logging.getLogger('phy')
 class AssignQuality(IPlugin):
     def assignQuality(self, controller, quality=None):
         """Assign the label to all selected clusters"""
+        selection = controller.supervisor.selected
+
+        # Safety check in case there was no prior selection
+        if not selection:
+            return
+
+        # Assign quality
         controller.supervisor.label('quality',
                                     str(quality) if quality else None)
-        selection = controller.supervisor.selected
+
+        # Obtain sub selection of good clusters
+        if not isinstance(selection, list):
+            selection = list(selection)
+        sel_good = [ci for ci, ll
+                    in controller.supervisor.get_labels('group').items()
+                    if ci in selection and ll == 'good']
+
+        # (Un-)assign group membership
         if quality:
-            controller.supervisor.label('group', 'good')
+            if len(sel_good) != len(selection):
+                controller.supervisor.label('group', 'good')
             logger.info('Assign quality of %i to clusters %s.', quality,
                         ', '.join(map(str, selection)))
         else:
-            controller.supervisor.label('group', None)
+            controller.supervisor.label('group', None, sel_good)
             logger.info('Remove quality assignment from clusters %s.',
                         ', '.join(map(str, selection)))
 
