@@ -151,13 +151,6 @@ class SelectionOptions(IPlugin):
                                                menu='Sele&ct')
             def selectnewest():
                 """Select the newest (non noise) cluster"""
-                sup = controller.supervisor
-
-                # Safety check in case there was no prior selection
-                if not sup.selected_clusters:
-                    logger.debug('No clusters selected.')
-                    return
-
                 selectnearest(direction=-1)
 
             @controller.supervisor.actions.add(shortcut='ctrl+shift+a',
