@@ -4,32 +4,16 @@ Copied and modified from https://github.com/petersenpeter/phy2-plugins/
 from phy import IPlugin, connect
 
 import logging
-import os
 import numpy as np
-
-import platform
-
-from pathlib import Path
-from subprocess import Popen
 
 from scipy.cluster.vq import kmeans2, whiten
 
 logger = logging.getLogger('phy')
 
-try:
-    import pandas as pd
-except ImportError:  # pragma: no cover
-    logger.warn("Package pandas not installed.")
-try:
-    from phy.utils.config import phy_config_dir
-except ImportError:  # pragma: no cover
-    logger.warn("phy_config_dir not available.")
 
 class Recluster(IPlugin):
     def attach_to_controller(self, controller):
         @connect
-        #@controller.supervisor.connect
-        #def on_create_cluster_views():
         def on_gui_ready(sender,gui):
 
             @controller.supervisor.actions.add(shortcut='alt+q', prompt=True, prompt_default=lambda: 2)
@@ -86,8 +70,6 @@ class Recluster(IPlugin):
                 # We split according to the labels.
                 controller.supervisor.actions.split(spike_ids, labels)
 
-
-            #@controller.supervisor.actions.add(shortcut='alt+x')
             @controller.supervisor.actions.add(shortcut='alt+x', prompt=True, prompt_default=lambda: 14)
             def MahalanobisDist(thres_in):
                 """Select threshold in STDs.
