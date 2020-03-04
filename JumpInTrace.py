@@ -26,10 +26,10 @@ class JumpInTrace(IPlugin):
                 time = trace_view.time  # Current position
 
                 selected = controller.supervisor.selected
-                spt = []
+                spt = np.array([])
                 for sel in selected:
-                    spt.extend(list(controller.get_spike_times(sel)))
-                spike_times = sorted(spt)
+                    spt = np.hstack((spt, (controller.get_spike_times(sel))))
+                spike_times = np.sort(spt)
                 ind = np.searchsorted(spike_times, time)
                 n = len(spike_times)
                 target = spike_times[(ind + delta) % n]
