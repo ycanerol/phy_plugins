@@ -72,7 +72,10 @@ class Recluster(IPlugin):
                 controller.supervisor.actions.split(spike_ids, labels)
 
             @controller.supervisor.actions.add(shortcut='alt+x', prompt=True,
-                                               prompt_default=lambda: 14)
+                                               prompt_default=lambda: 14,
+                                               name='Split by Mahalanobis '
+                                                    'distance',
+                                               alias='mahdist')
             def MahalanobisDist(thres_in):
                 """Select threshold in STDs"""
                 logger.info("Removing outliers by Mahalanobis distance")
@@ -126,4 +129,5 @@ class Recluster(IPlugin):
                 outliers2 = np.ones(len(s), dtype=int)
                 outliers2[outliers] = 2
                 logger.info("Outliers detected: %d.", len(outliers))
-                controller.supervisor.actions.split(s, outliers2)
+                if len(outliers) > 0:
+                    controller.supervisor.actions.split(s, outliers2)
