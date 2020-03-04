@@ -77,6 +77,9 @@ class WriteComments(IPlugin):
         self.pairs = data.get('pairs', dflts['pairs'])
         self.pairs_inv = {v: k for k, v in self.pairs.items()}
 
+        logger.debug("Available short hand notations are %s.",
+                     ', '.join(self.pairs.keys()))
+
     def load_comments(self, controller):
         """Load selected comments a list of as sets"""
         cluster_ids = controller.supervisor.selected

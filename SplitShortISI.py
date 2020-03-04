@@ -12,7 +12,7 @@ class SplitShortISI(IPlugin):
         @connect
         def on_gui_ready(sender, gui):
             @controller.supervisor.actions.add(shortcut='alt+i',
-                                               name='Visualize Short ISI',
+                                               name='Visualize short ISI',
                                                alias='isi')
             def VisualizeShortISI():
                 """
