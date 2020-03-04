@@ -18,8 +18,8 @@ all selections will be moved to cluster view and no longer in the
 similarity view.
 
 
-Select the newest (non noise) cluster
--------------------------------------
+Select the next/previous/newest (non noise) cluster
+---------------------------------------------------
 
 Select the cluster with the highest id (among non-noise clusters). This
 is useful after performing an action and losing track of the recently
@@ -64,6 +64,7 @@ class SelectionOptions(IPlugin):
                 sup = controller.supervisor
 
                 if len(sup.selected) < 2:
+                    logger.debug('Not enough clusters selected.')
                     return
 
                 if (len(sup.selected) == 2
@@ -84,30 +85,80 @@ class SelectionOptions(IPlugin):
                 sup.task_logger._select_state(state)
                 sup.task_logger.process()
 
+            def selectnearest(start=None, direction=1):
+                """Select the nearest non-noise cluster"""
+                ids = controller.supervisor.clustering.cluster_ids
+                if isinstance(ids, np.ndarray):
+                    ids = ids.tolist()
+                assert len(ids) > 0
+
+                # Arrange cluster id list for traversing
+                ids = sorted(ids)[::direction]
+                if start in ids:
+                    ids = ids[ids.index(start)+1:]
+
+                # Traverse in desired direction
+                groups = controller.supervisor.get_labels('group')
+                for nearest in ids:
+                    if groups[nearest] != 'noise':
+                        break
+                else:
+                    return
+
+                if controller.supervisor.selected_clusters == [nearest]:
+                    return
+
+                logger.info('Change selection from %s to %i.',
+                            ', '.join(map(str,
+                                          controller.supervisor.selected)),
+                            nearest)
+                controller.supervisor.select(nearest)
+
+            @controller.supervisor.actions.add(shortcut='shift+pgup',
+                                               name='Select next higher '
+                                                    'cluster',
+                                               menu='Sele&ct')
+            def selectpreviousid():
+                """Select the next higher (non-noise) cluster id"""
+                sup = controller.supervisor
+
+                # Safety check in case there was no prior selection
+                if not sup.selected_clusters:
+                    logger.debug('No clusters selected.')
+                    return
+
+                sel = max(sup.selected_clusters)
+                selectnearest(sel, -1)
+
             @controller.supervisor.actions.add(shortcut='shift+pgdown',
+                                               name='Select next lower '
+                                                    'cluster',
+                                               menu='Sele&ct')
+            def selectnextid():
+                """Select the next lower (non-noise) cluster id"""
+                sup = controller.supervisor
+
+                # Safety check in case there was no prior selection
+                if not sup.selected_clusters:
+                    logger.debug('No clusters selected.')
+                    return
+
+                sel = max(sup.selected_clusters)
+                selectnearest(sel, 1)
+
+            @controller.supervisor.actions.add(shortcut='shift+end',
                                                name='Select newest cluster',
                                                menu='Sele&ct')
             def selectnewest():
                 """Select the newest (non noise) cluster"""
                 sup = controller.supervisor
 
-                # Find the highest non-noise cluster
-                groups = sup.get_labels('group')
-                ids = sup.clustering.cluster_ids
-                if isinstance(ids, np.ndarray):
-                    ids = ids.tolist()
-                highest = max(ids)
-                while len(ids) > 0 and groups[highest] == 'noise':
-                    ids.remove(highest)
-                    highest = max(ids)
-
-                if sup.selected == [highest] or len(ids) < 1:
+                # Safety check in case there was no prior selection
+                if not sup.selected_clusters:
+                    logger.debug('No clusters selected.')
                     return
 
-                logger.info('Change selection from %s to %i.',
-                            ', '.join(map(str, sup.selected)), highest)
-
-                sup.select(highest)
+                selectnearest(direction=-1)
 
             @controller.supervisor.actions.add(shortcut='ctrl+shift+a',
                                                name='Select all in channel',
@@ -118,6 +169,7 @@ class SelectionOptions(IPlugin):
 
                 # Safety check in case there was no prior selection
                 if not sup.selected_clusters:
+                    logger.debug('No clusters selected.')
                     return
 
                 # Obtain the currently selected channel
@@ -167,6 +219,7 @@ class SelectionOptions(IPlugin):
 
                 # Safety check in case there was no prior selection
                 if not sup.selected_clusters:
+                    logger.debug('No clusters selected.')
                     return
 
                 # Only consider one selected cluster
