@@ -50,6 +50,9 @@ logger = logging.getLogger('phy')
 
 
 class SelectionOptions(IPlugin):
+    # Safety measure of maximum resulting selections
+    max_selections = 50
+
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
@@ -113,6 +116,10 @@ class SelectionOptions(IPlugin):
                 """Select all unsorted clusters in current channel"""
                 sup = controller.supervisor
 
+                # Safety check in case there was no prior selection
+                if not sup.selected_clusters:
+                    return
+
                 # Obtain the currently selected channel
                 channel = set(sup.get_cluster_info(c)['ch']
                               for c in sup.selected_clusters)
@@ -130,9 +137,17 @@ class SelectionOptions(IPlugin):
                     logger.info('Channel %s fully sorted.', channel)
                     return
 
-                logger.info('Change selection from %s to channel %s (%s).',
-                            ', '.join(map(str, sup.selected)), channel,
-                            ', '.join(map(str, sel)))
+                # Safety measure
+                if len(sel) > self.max_selections:
+                    logger.warn('Capped the number of selections from %i '
+                                'to %i.', len(sel), self.max_selections)
+                    sel = sel[:self.max_selections]
+                    capped = 'the first %i' % self.max_selections
+                else:
+                    capped = 'all'
+
+                logger.info('Select %s unsorted clusters in channel %s',
+                            capped, channel)
 
                 sup.select(sel)
 
@@ -183,9 +198,18 @@ class SelectionOptions(IPlugin):
                     logger.info('No similar clusters found.')
                     return
 
-                logger.info('For cluster %i select all similar, non-noise '
-                            'clusters between %g and %g: %s.', cid, low,
-                            min(high, 1), ', '.join(map(str, [cid] + sel)))
+                # Safety measure
+                if len(sel)+1 > self.max_selections:
+                    logger.warn('Capped the number of selections from %i '
+                                'to %i.', len(sel)+1, self.max_selections)
+                    sel = sel[:self.max_selections-1]
+                    capped = 'the first %i' % self.max_selections
+                else:
+                    capped = 'all'
+
+                logger.info('Select %s non-noise clusters with a similarity '
+                            'between %g and %g to cluster %i.', capped, low,
+                            min(high, 1), cid)
 
                 # Let the TaskLogger take care of making the selections
                 sup.task_logger._select_state(([cid], None, sel, None))
