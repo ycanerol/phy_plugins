@@ -15,7 +15,8 @@ class Recluster(IPlugin):
         def on_gui_ready(sender, gui):
 
             @controller.supervisor.actions.add(shortcut='alt+q', prompt=True,
-                                               prompt_default=lambda: 2)
+                                               prompt_default=lambda: 2,
+                                               submenu='Clustering')
             def K_means_clustering(kmeanclusters):
                 """Select number of clusters"""
                 logger.info("Running K-means clustering")
@@ -37,7 +38,8 @@ class Recluster(IPlugin):
                 logger.info("K means clustering complete")
 
             @controller.supervisor.actions.add(shortcut='alt+a', prompt=True,
-                                               prompt_default=lambda: 2)
+                                               prompt_default=lambda: 2,
+                                               submenu='Clustering')
             def K_means_clustering_amplitude(n_clusters):
                 """
                 Split based on template amplitudes. Select number of
@@ -75,7 +77,8 @@ class Recluster(IPlugin):
                                                prompt_default=lambda: 14,
                                                name='Split by Mahalanobis '
                                                     'distance',
-                                               alias='mahdist')
+                                               alias='mahdist',
+                                               submenu='Clustering')
             def MahalanobisDist(thres_in):
                 """Select threshold in STDs"""
                 logger.info("Removing outliers by Mahalanobis distance")
