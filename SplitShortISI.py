@@ -1,4 +1,4 @@
-"""Show how to write a custom split action."""
+"""Remove spikes with low interspike interval"""
 
 from phy import IPlugin, connect
 import numpy as np
@@ -11,7 +11,9 @@ class SplitShortISI(IPlugin):
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
-            @controller.supervisor.actions.add(shortcut='alt+i')
+            @controller.supervisor.actions.add(shortcut='alt+i',
+                                               name='Visualize Short ISI',
+                                               alias='isi')
             def VisualizeShortISI():
                 """
                 Split all spikes with an interspike interval of less
@@ -47,12 +49,13 @@ class SplitShortISI(IPlugin):
                 # Include last spike to match with len spike_ids
                 labels = np.append(labels, 1)
 
-                # Perform the clustering algorithm, which returns an
-                # integer for each sub-cluster
+                # # Perform the clustering algorithm, which returns an
+                # # integer for each sub-cluster
                 # labels = k_means(y.reshape((-1, 1)))
 
                 assert spike_ids.shape == labels.shape
 
                 # We split according to the labels.
                 controller.supervisor.actions.split(spike_ids, labels)
-                logger.info('Splitted short ISI spikes from main cluster')
+                num = np.sum(np.asarray(labels) == 2)
+                logger.info('Removed %i spikes from %i.', num, cluster_ids[0])
