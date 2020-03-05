@@ -36,7 +36,7 @@ class EventMarker(IPlugin):
                 self.text_visual = TextVisual(self.line_color)
                 _fix_coordinate_in_visual(self.text_visual, 'y')
                 self.text_visual.inserter.insert_vert(
-                    'gl_Position.x += 0.005;', 'after_transforms')
+                    'gl_Position.x += 0.001;', 'after_transforms')
                 view.canvas.add_visual(self.text_visual)
 
                 @view.actions.add(shortcut='alt+b', checkable=True,
@@ -58,11 +58,10 @@ class EventMarker(IPlugin):
 
                 @view.actions.add(shortcut='shift+alt+e', prompt=True,
                                   name='Go to event', alias='ge')
-                def go_to_event(eventnr):
-                    trace_view_go = gui.get_view(TraceView).go_to
-                    if eventnr >0 and eventnr <= events.shape[0]:
-                        trace_view_go(events[eventnr-1])
-
+                def Go_to_event(event_num):
+                    trace_view = gui.get_view(TraceView)
+                    if 0 < event_num <= events.size:
+                        trace_view.go_to(events[event_num - 1])
 
                 # Disable the menu until events are successfully added
                 view.actions.disable('Toggle event markers')
