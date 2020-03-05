@@ -10,7 +10,7 @@ by keyboard shortcut.
 """
 
 from phy import IPlugin, connect
-from phy.cluster.views import AmplitudeView
+from phy.cluster.views import AmplitudeView, TraceView
 from phy.plot.visuals import LineVisual, TextVisual
 from phy.plot.transform import _fix_coordinate_in_visual
 import logging
@@ -55,6 +55,14 @@ class EventMarker(IPlugin):
                         self.text_visual.hide()
                     view = gui.get_view(AmplitudeView)
                     view.canvas.update()
+
+                @view.actions.add(shortcut='shift+alt+e', prompt=True,
+                                  name='Go to event', alias='ge')
+                def go_to_event(eventnr):
+                    trace_view_go = gui.get_view(TraceView).go_to
+                    if eventnr >0 and eventnr <= events.shape[0]:
+                        trace_view_go(events[eventnr-1])
+
 
                 # Disable the menu until events are successfully added
                 view.actions.disable('Toggle event markers')
