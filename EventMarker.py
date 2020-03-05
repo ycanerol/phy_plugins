@@ -64,6 +64,7 @@ class EventMarker(IPlugin):
                         trace_view.go_to(events[event_num - 1])
 
                 # Disable the menu until events are successfully added
+                view.actions.disable('Go to event')
                 view.actions.disable('Toggle event markers')
 
                 # Read event markers from file
@@ -110,6 +111,7 @@ class EventMarker(IPlugin):
                 view.canvas.update_visual(self.text_visual)
 
                 # Finally enable the menu
-                logger.debug('Enable menu item.')
+                logger.debug('Enable menu items.')
+                view.actions.enable('Go to event')
                 view.actions.enable('Toggle event markers')
                 view.actions.get('Toggle event markers').toggle()
