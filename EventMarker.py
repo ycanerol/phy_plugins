@@ -2,7 +2,8 @@
 Add event markers to the amplitude view
 
 The event markers are read from the file `eventmarkers.txt`. The file is
-expected to contain one event in seconds per line.
+expected to contain one event in seconds per line. Optionally,
+corresponding names can be supplied in `eventmarkernames.txt`.
 
 The event markers may be toggled on/off from the amplitude view menu or
 by keyboard shortcut.
