@@ -61,7 +61,7 @@ class EventMarker(IPlugin):
                 # Read event markers from file
                 filename = controller.dir_path / 'eventmarkers.txt'
                 try:
-                    events = np.loadtxt(filename)
+                    events = np.loadtxt(filename, usecols=0)
                 except (FileNotFoundError, OSError):
                     logger.warn('Event marker file not found: `%s`.',
                                 filename)
@@ -69,6 +69,16 @@ class EventMarker(IPlugin):
 
                 # Create list of event names
                 labels = list(map(str, range(1, events.size + 1)))
+
+                # Read event names from file (if present)
+                filename = controller.dir_path / 'eventmarkernames.txt'
+                try:
+                    eventnames = np.loadtxt(filename, usecols=0, dtype=str,
+                                            max_rows=events.size)
+                    labels[:eventnames.size] = eventnames
+                except (FileNotFoundError, OSError):
+                    logger.info('Event marker names file not found (optional):'
+                                ' `%s`. Fall back to numbering.', filename)
 
                 # # Obtain event times from samples
                 # events /= int(controller.model.sample_rate)
