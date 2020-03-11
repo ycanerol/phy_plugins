@@ -49,11 +49,12 @@ class EventMarker(IPlugin):
                         logger.debug('Toggle on markers.')
                         self.line_visual.show()
                         self.text_visual.show()
+                        view.show_events = True
                     else:
                         logger.debug('Toggle off markers.')
                         self.line_visual.hide()
                         self.text_visual.hide()
-                    view = gui.get_view(AmplitudeView)
+                        view.show_events = False
                     view.canvas.update()
 
                 @view.actions.add(shortcut='shift+alt+e', prompt=True,
@@ -66,6 +67,9 @@ class EventMarker(IPlugin):
                 # Disable the menu until events are successfully added
                 view.actions.disable('Go to event')
                 view.actions.disable('Toggle event markers')
+                if not hasattr(view, 'show_events'):
+                    view.show_events = True
+                view.state_attrs += ('show_events',)
 
                 # Read event markers from file
                 filename = controller.dir_path / 'eventmarkers.txt'
@@ -74,6 +78,7 @@ class EventMarker(IPlugin):
                 except (FileNotFoundError, OSError):
                     logger.warn('Event marker file not found: `%s`.',
                                 filename)
+                    view.show_events = False
                     return
 
                 # Create list of event names
@@ -114,4 +119,8 @@ class EventMarker(IPlugin):
                 logger.debug('Enable menu items.')
                 view.actions.enable('Go to event')
                 view.actions.enable('Toggle event markers')
-                view.actions.get('Toggle event markers').toggle()
+                if view.show_events:
+                    view.actions.get('Toggle event markers').toggle()
+                else:
+                    self.line_visual.hide()
+                    self.text_visual.hide()
