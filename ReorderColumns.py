@@ -118,7 +118,7 @@ class ReorderColumns(IPlugin):
             """The similarity view requires special rearranging"""
 
             # Add custom columns after 'similarity'
-            columns = controller.supervisor.columns
+            columns = controller.supervisor.columns.copy()
             for col in self.last_columns:
                 columns.remove(col)
             columns.append('similarity')
