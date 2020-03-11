@@ -12,7 +12,7 @@ typing '!' only) and '~' to remove parts of the comments from all
 selected clusters.
 
 Multiple comments are separated by a delimiter (see configuration below,
-space by default).
+'_' by default).
 
 Comments are divided into two types: short hand notations (characters),
 and custom comments. The short hand notations allow automatic expansion
@@ -55,7 +55,7 @@ class WriteComments(IPlugin):
 
         # Default config
         dflts = dict()
-        dflts['delimiter'] = ' '  # Comment delimiter
+        dflts['delimiter'] = '_'  # Comment delimiter
         dflts['pairs'] = {  # Character-comment pairs
             'a': 'axon',
             'm': 'misaligned',
