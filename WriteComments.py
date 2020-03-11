@@ -12,7 +12,7 @@ typing '!' only) and '~' to remove parts of the comments from all
 selected clusters.
 
 Multiple comments are separated by a delimiter (see configuration below,
-'_' by default). Spaces are not permitted.
+space by default).
 
 Comments are divided into two types: short hand notations (characters),
 and custom comments. The short hand notations allow automatic expansion
@@ -55,7 +55,7 @@ class WriteComments(IPlugin):
 
         # Default config
         dflts = dict()
-        dflts['delimiter'] = '_'  # Comment delimiter (space is not permitted)
+        dflts['delimiter'] = ' '  # Comment delimiter
         dflts['pairs'] = {  # Character-comment pairs
             'a': 'axon',
             'm': 'misaligned',
@@ -149,7 +149,7 @@ class WriteComments(IPlugin):
             @controller.supervisor.actions.add(name='Add comment', alias='com',
                                                shortcut='alt+w', prompt=True,
                                                prompt_default=get_comments)
-            def Add_comment(userinput):
+            def Add_comment(*userinput):
                 """
                 Add comments to selected clusters, prepend with '~' to
                 remove comments, prepend with '!' to replace completely,
@@ -157,6 +157,12 @@ class WriteComments(IPlugin):
                 """
                 logger.debug('Non-empty user input received.')
                 cluster_ids = controller.supervisor.selected
+
+                # Treat multiple arguments as single argument:
+                # Commas are kept, spaces represent the delimiter
+                userinput = [','.join(map(str, u)) if isinstance(u, list)
+                             else u for u in userinput]
+                userinput = self.delimiter.join(map(str, userinput))
 
                 # Check if replacement if requested
                 replace = userinput.startswith('!')
