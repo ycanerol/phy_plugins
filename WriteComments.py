@@ -33,6 +33,10 @@ Configuration:
 On first use, a JSON file will be created in the Phy configuration
 directory, usually {HOME}/.phy/plugin_writecomments.json. The delimiter
 and the short hand notation pairs can be adjusted there.
+
+Note:
+
+Only single-character, lower-case short hand notations are supported.
 """
 
 import json
@@ -75,6 +79,13 @@ class WriteComments(IPlugin):
 
         self.delimiter = data.get('delimiter', dflts['delimiter'])
         self.pairs = data.get('pairs', dflts['pairs'])
+
+        # Allow lower case keys only
+        for k in self.pairs.keys():
+            if not k.islower():
+                self.pairs[k.lower()] = self.pairs[k]
+                del self.pairs[k]
+
         self.pairs_inv = {v: k for k, v in self.pairs.items()}
 
         logger.debug("Available short hand notations are %s.",
@@ -168,6 +179,7 @@ class WriteComments(IPlugin):
 
                 # Extract short hand notations and custom comments
                 chars_new, *comments_new = userinput.split(self.delimiter)
+                chars_new = chars_new.lower()
                 if set(chars_new).issubset(self.pairs.keys()):
                     chars_new = set(self.pairs[c] for c in set(chars_new))
                 else:
