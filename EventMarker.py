@@ -2,8 +2,11 @@
 Add event markers to the amplitude view
 
 The event markers are read from the file `eventmarkers.txt`. The file is
-expected to contain one event in seconds per line. Optionally,
-corresponding names can be supplied in `eventmarkernames.txt`.
+expected to contain one event per line. If the events are provided as
+floats (with decimal point), they are treated as seconds. If they are
+provided as integers (no decimal point), they are treated as samples.
+Optionally, corresponding names can be supplied in
+`eventmarkernames.txt`.
 
 The event markers may be toggled on/off from the amplitude view menu or
 by keyboard shortcut.
@@ -74,7 +77,7 @@ class EventMarker(IPlugin):
                 # Read event markers from file
                 filename = controller.dir_path / 'eventmarkers.txt'
                 try:
-                    events = np.loadtxt(filename, usecols=0)
+                    events = np.genfromtxt(filename, usecols=0, dtype=None)
                 except (FileNotFoundError, OSError):
                     logger.warn('Event marker file not found: `%s`.',
                                 filename)
@@ -94,8 +97,10 @@ class EventMarker(IPlugin):
                     logger.info('Event marker names file not found (optional):'
                                 ' `%s`. Fall back to numbering.', filename)
 
-                # # Obtain event times from samples
-                # events /= int(controller.model.sample_rate)
+                # Obtain seconds from samples
+                if events.dtype == int:
+                    logger.debug('Converting input from samples to seconds.')
+                    events = events / controller.model.sample_rate
 
                 logger.debug('Add event markers to amplitude view.')
 
