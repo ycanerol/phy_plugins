@@ -79,9 +79,10 @@ class ReorderColumns(IPlugin):
 
     def attach_to_controller(self, controller):
         # Reduce width of the quality column/all columns
+        spec = '' if self.tight_columns else '[data-sort=\'quality\']'
         ClusterView._styles += """
 
-            table th[data-sort='quality'], td.quality {
+            table th""" + spec + """, td.quality {
                 max-width: 8px;
                 overflow: hidden;
             }
