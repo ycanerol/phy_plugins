@@ -79,15 +79,9 @@ class ReorderColumns(IPlugin):
 
     def attach_to_controller(self, controller):
         # Reduce width of the quality column/all columns
-        qual_idx, cmnt_idx = 999, 999
-        if 'quality' in self.last_columns:
-            qual_idx = self.last_columns[::-1].index('quality') + 1
-        if 'comment' in self.last_columns:
-            cmnt_idx = self.last_columns[::-1].index('comment') + 1
-        spec = '' if self.tight_columns else f':nth-last-child({qual_idx})'
         ClusterView._styles += """
 
-            table th""" + spec + """, td.quality {
+            table th[data-sort='quality'], td.quality {
                 max-width: 8px;
                 overflow: hidden;
             }
@@ -97,7 +91,7 @@ class ReorderColumns(IPlugin):
             }
 
             /* Force comment to be left-aligned */
-            table th:nth-last-child(""" + str(cmnt_idx) + """), td.comment {
+            table th[data-sort='comment'], td.comment {
                 text-align: left!important;
             }
 
