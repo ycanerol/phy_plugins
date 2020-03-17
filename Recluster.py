@@ -14,7 +14,7 @@ class Recluster(IPlugin):
         @connect
         def on_gui_ready(sender, gui):
 
-            @controller.supervisor.actions.add(shortcut='alt+q', prompt=True,
+            @controller.supervisor.actions.add(shortcut='shift+alt+q', prompt=True,
                                                prompt_default=lambda: 2,
                                                submenu='Clustering')
             def K_means_clustering(kmeanclusters):
@@ -37,7 +37,7 @@ class Recluster(IPlugin):
                 controller.supervisor.actions.split(s, label)
                 logger.info("K means clustering complete")
 
-            @controller.supervisor.actions.add(shortcut='alt+a', prompt=True,
+            @controller.supervisor.actions.add(shortcut='shift+alt+a', prompt=True,
                                                prompt_default=lambda: 2,
                                                submenu='Clustering')
             def K_means_clustering_amplitude(n_clusters):
@@ -73,7 +73,7 @@ class Recluster(IPlugin):
                 # We split according to the labels.
                 controller.supervisor.actions.split(spike_ids, labels)
 
-            @controller.supervisor.actions.add(shortcut='alt+x', prompt=True,
+            @controller.supervisor.actions.add(shortcut='shift+alt+x', prompt=True,
                                                prompt_default=lambda: 14,
                                                name='Split by Mahalanobis '
                                                     'distance',

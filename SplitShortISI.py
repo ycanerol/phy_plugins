@@ -11,7 +11,7 @@ class SplitShortISI(IPlugin):
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
-            @controller.supervisor.actions.add(shortcut='alt+i',
+            @controller.supervisor.actions.add(shortcut='shift+alt+i',
                                                name='Visualize short ISI',
                                                alias='isi')
             def VisualizeShortISI():

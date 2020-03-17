@@ -56,7 +56,7 @@ class SelectionOptions(IPlugin):
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
-            @controller.supervisor.actions.add(shortcut='alt+y',
+            @controller.supervisor.actions.add(shortcut='shift+alt+y',
                                                name='Reverse selection',
                                                menu='Sele&ct')
             def reverseselection():
