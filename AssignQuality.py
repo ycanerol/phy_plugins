@@ -50,27 +50,27 @@ class AssignQuality(IPlugin):
     def attach_to_controller(self, controller):
         @connect
         def on_gui_ready(sender, gui):
-            @controller.supervisor.actions.add(shortcut='shift+alt+1',
+            @controller.supervisor.actions.add(shortcut='ctrl+alt+1',
                                                submenu='Assign quality')
             def Assign_quality_1():
                 self.assignQuality(controller, 1)
 
-            @controller.supervisor.actions.add(shortcut='shift+alt+2',
+            @controller.supervisor.actions.add(shortcut='ctrl+alt+2',
                                                submenu='Assign quality')
             def Assign_quality_2():
                 self.assignQuality(controller, 2)
 
-            @controller.supervisor.actions.add(shortcut='shift+alt+3',
+            @controller.supervisor.actions.add(shortcut='ctrl+alt+3',
                                                submenu='Assign quality')
             def Assign_quality_3():
                 self.assignQuality(controller, 3)
 
-            @controller.supervisor.actions.add(shortcut='shift+alt+4',
+            @controller.supervisor.actions.add(shortcut='ctrl+alt+4',
                                                submenu='Assign quality')
             def Assign_quality_4():
                 self.assignQuality(controller, 4)
 
-            @controller.supervisor.actions.add(shortcut='shift+alt+5',
+            @controller.supervisor.actions.add(shortcut='ctrl+alt+5',
                                                submenu='Assign quality')
             def Remove_quality_assigment():
                 self.assignQuality(controller, 0)

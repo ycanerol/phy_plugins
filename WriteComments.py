@@ -147,7 +147,7 @@ class WriteComments(IPlugin):
         @connect
         def on_gui_ready(sender, gui):
             @controller.supervisor.actions.add(name='Add comment', alias='com',
-                                               shortcut='shift+alt+w', prompt=True,
+                                               shortcut='ctrl+alt+w', prompt=True,
                                                prompt_default=get_comments)
             def Add_comment(*userinput):
                 """
