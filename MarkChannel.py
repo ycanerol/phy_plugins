@@ -19,9 +19,6 @@ class MarkChannel(IPlugin):
             def on_select(sender, cluster_ids=None, **kwargs):
                 view = gui.get_view(ClusterView)
 
-                if not cluster_ids:
-                    return
-
                 # Get selected channels
                 channels = [sender.get_cluster_info(c)['ch']
                             for c in cluster_ids]
@@ -31,8 +28,8 @@ class MarkChannel(IPlugin):
                 # Get cluster colors
                 colors = [selected_cluster_color(i, alpha=1)
                           for i in range(len(cluster_ids))]
-                colors = (np.asarray(colors)[c_ids] * 255).astype(int)[:, :3]
-                colors = [('rgba(' + ', '.join(map(str, c)) + ', 0.2)')
+                colors = (np.asarray(colors)[c_ids] * 255).astype(int)
+                colors = [('rgba(' + ', '.join(map(str, c[:3])) + ', 0.2)')
                           for c in colors]
 
                 clust = dict()
@@ -71,6 +68,7 @@ class MarkChannel(IPlugin):
                 """
 
                 def report(obj):
-                    logger.debug('Highlighted clusters  %s.', ', '.join(obj))
+                    logger.debug('Highlighted clusters %s.',
+                                 ', '.join(obj) if len(obj) > 0 else 'none')
 
                 view.eval_js(js, callback=report)
