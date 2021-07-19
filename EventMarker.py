@@ -92,7 +92,7 @@ class EventMarker(IPlugin):
                 try:
                     eventnames = np.loadtxt(filename, usecols=0, dtype=str,
                                             max_rows=events.size)
-                    labels[:eventnames.size] = eventnames
+                    labels[:eventnames.size] = np.atleast_1d(eventnames)
                 except (FileNotFoundError, OSError):
                     logger.info('Event marker names file not found (optional):'
                                 ' `%s`. Fall back to numbering.', filename)
