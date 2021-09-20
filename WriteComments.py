@@ -60,6 +60,7 @@ class WriteComments(IPlugin):
             'a': 'axon',
             'm': 'misaligned',
             's': 'spontaneous',
+            'n': 'noisefloor',
         }
 
         # Create config file with defaults if it does not exist
